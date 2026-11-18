@@ -92,17 +92,20 @@ export function DashboardPage() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#032B91]/70 via-[#0436AE]/36 to-transparent sm:w-3/5" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#032B91]/35 via-transparent to-[#032B91]/35" />
 
-        <div className="relative z-10 flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
-          <div className="max-w-xl flex-1 space-y-3.5">
+        <div className="relative z-10 flex flex-col gap-5">
+          <div className="max-w-xl space-y-3.5">
             <h1 className="font-display text-2xl font-extrabold tracking-tight text-balance drop-shadow sm:text-4xl">
               Build • Grow • <span className="text-[#FFD700]">Earn</span>
             </h1>
 
             {/* Referral Link Box */}
             <div className="rounded-2xl border border-white/25 bg-[#032B91]/65 p-3.5 backdrop-blur-md">
-              <div className="mb-2 flex items-center gap-2 text-xs font-bold text-[#FFE98A]">
-                <Link2 className="h-4 w-4" />
-                <span>Your Referral Link</span>
+              <div className="mb-2 flex items-center justify-between gap-2 text-xs font-bold text-[#FFE98A]">
+                <span className="inline-flex items-center gap-2">
+                  <Link2 className="h-4 w-4" />
+                  <span>Your Referral Link</span>
+                </span>
+                <span className="text-[11px] font-semibold text-blue-100/90">5% Direct Reward</span>
               </div>
               <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
                 <div className="flex flex-1 items-center overflow-hidden rounded-xl border border-white/25 bg-white">
@@ -125,43 +128,68 @@ export function DashboardPage() {
                 <GoldButton onClick={handleShare} className="px-4 py-2 text-xs sm:text-sm">
                   Share Link <Share2 className="h-3.5 w-3.5" />
                 </GoldButton>
-                <GoldButton onClick={() => navigate('/staking')} className="px-4 py-2 text-xs sm:text-sm">
-                  Invest Now →
-                </GoldButton>
               </div>
             </div>
+          </div>
 
-            {/* Rank Box right below Referral Link */}
-            <div
-              onClick={() => navigate('/rank')}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && navigate('/rank')}
-              className="flex flex-col gap-3 rounded-2xl border border-[#FFD700]/45 bg-[#032B91]/70 p-3.5 backdrop-blur-md transition hover:border-[#FFD700] cursor-pointer sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex items-center gap-3">
-                <RankMedalIcon tier="Silver" size={44} />
-                <div>
-                  <p className="text-[11px] font-bold tracking-wide text-[#FFE98A] uppercase">Current Rank</p>
-                  <p className="font-display text-lg font-extrabold text-white leading-tight">
-                    Silver <span className="text-xs font-semibold text-blue-100">· $250 / Week</span>
+          {/* Full-Width Current Rank Showcase with Invest Now & Rank Navigation */}
+          <div className="w-full rounded-2xl border border-[#FFD700]/55 bg-gradient-to-r from-[#061B50]/88 via-[#032B91]/82 to-[#0645C5]/78 p-4 backdrop-blur-md shadow-[0_10px_28px_rgba(3,43,145,0.35)]">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              {/* Rank Identity */}
+              <div className="flex items-center gap-3.5">
+                <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#FFD700]/50 bg-[#061B50]/80 shadow-inner">
+                  <RankMedalIcon tier="Silver" size={46} />
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-[11px] font-bold tracking-wider text-[#FFE98A] uppercase">
+                    Current Rank
+                  </p>
+                  <div className="flex flex-wrap items-baseline gap-2">
+                    <span className="font-display text-xl font-extrabold text-white leading-none">
+                      Silver
+                    </span>
+                    <span className="text-xs font-bold text-[#FFD700] tabular-nums">
+                      $250 / Week
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-medium text-blue-100/90 tabular-nums">
+                    Matching: $12,850 / $25,000 · 3 Months Term
                   </p>
                 </div>
               </div>
 
-              <div className="flex-1 sm:max-w-xs space-y-1.5">
+              {/* Next Rank Progress */}
+              <div className="flex-1 lg:max-w-md space-y-1.5">
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-blue-100">Next Rank: <strong className="text-[#FFD700]">Gold</strong></span>
+                  <span className="text-blue-100">
+                    Next: <strong className="text-[#FFD700]">Gold Rank</strong>
+                  </span>
                   <span className="text-[#FFE98A] tabular-nums">68%</span>
                 </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full border border-white/25 bg-[#061B50]/80 p-0.5">
+                <div className="h-2.5 w-full overflow-hidden rounded-full border border-white/25 bg-[#061B50]/90 p-0.5">
                   <div className="hana-progress-gold h-full rounded-full" style={{ width: '68%' }} />
                 </div>
+                <p className="text-[11px] font-medium text-blue-100/80 tabular-nums">
+                  $12,150 matching volume left for Gold
+                </p>
               </div>
 
-              <span className="hidden sm:inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 text-[#FFD700]">
-                <ChevronRight className="h-4 w-4" />
-              </span>
+              {/* Invest Now & Rank Actions */}
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <GoldButton
+                  onClick={() => navigate('/staking')}
+                  className="px-4 py-2 text-xs sm:text-sm"
+                >
+                  Invest Now <ArrowRight className="h-3.5 w-3.5" />
+                </GoldButton>
+                <button
+                  type="button"
+                  onClick={() => navigate('/rank')}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#FFD700]/60 bg-white/10 px-3.5 py-2 text-xs font-bold text-[#FFE98A] transition hover:bg-white/20 hover:text-white whitespace-nowrap shrink-0 cursor-pointer"
+                >
+                  Rank Details <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

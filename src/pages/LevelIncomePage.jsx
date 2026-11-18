@@ -4,11 +4,11 @@ import {
   Coins,
   Users,
   Layers,
-  Crown,
   FileText,
   RefreshCw,
   ArrowRight,
-  Trophy,
+  Calendar,
+  X,
 } from 'lucide-react';
 import { useHana, formatShortAddress } from '../context/HanaContext';
 import { HANA_IMAGES } from '../assets/images';
@@ -20,25 +20,37 @@ import {
   StatCard,
   TxHashChip,
 } from '../components/common/UiPrimitives';
-import { RankMedalIcon } from '../components/common/Icons3D';
 
-const LEVEL_SUMMARIES = [
-  { level: 1, usd: 250, hana: 500, tier: 'Starter' },
-  { level: 2, usd: 300, hana: 600, tier: 'Silver' },
-  { level: 3, usd: 275, hana: 550, tier: 'Gold' },
-  { level: 4, usd: 200, hana: 400, tier: 'Diamond' },
-  { level: 5, usd: 225, hana: 450, tier: 'Platinum' },
-];
+function toIsoDate(dateStr) {
+  const parsed = new Date(dateStr);
+  if (Number.isNaN(parsed.getTime())) return '';
+  const y = parsed.getFullYear();
+  const m = String(parsed.getMonth() + 1).padStart(2, '0');
+  const d = String(parsed.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 export function LevelIncomePage() {
   const { levelIncomeEvents, showToast } = useHana();
   const [selectedLevel, setSelectedLevel] = useState('all');
+  const [selectedDate, setSelectedDate] = useState('');
   const logRef = useRef(null);
 
-  const filteredEvents =
-    selectedLevel === 'all'
-      ? levelIncomeEvents
-      : levelIncomeEvents.filter((e) => e.level === selectedLevel);
+  const filteredEvents = levelIncomeEvents.filter((e) => {
+    const matchesLevel = selectedLevel === 'all' || e.level === selectedLevel;
+    const eventIso = toIsoDate(e.date);
+    const matchesDate = !selectedDate || eventIso === selectedDate;
+    return matchesLevel && matchesDate;
+  });
+
+  const filteredUsd = filteredEvents.reduce((sum, e) => sum + e.usdtIncome, 0);
+  const filteredHana = filteredEvents.reduce((sum, e) => sum + e.hanaCredited, 0);
+  const hasActiveFilter = selectedLevel !== 'all' || Boolean(selectedDate);
+
+  const clearFilters = () => {
+    setSelectedLevel('all');
+    setSelectedDate('');
+  };
 
   return (
     <div className="space-y-5">
@@ -82,59 +94,6 @@ export function LevelIncomePage() {
         />
       </div>
 
-      {/* Level-Wise Earnings Summary */}
-      {/* <SectionCard
-        title="Level-Wise Earnings Summary"
-        subtitle="Aggregated directly from on-chain LevelIncomeAllotted events"
-        icon={<Crown className="h-4 w-4" />}
-      >
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {LEVEL_SUMMARIES.map((lvl) => {
-            const active = selectedLevel === lvl.level;
-            return (
-              <button
-                key={lvl.level}
-                type="button"
-                onClick={() => setSelectedLevel(lvl.level)}
-                className={`flex items-center gap-2.5 rounded-2xl border p-3 text-left transition cursor-pointer ${
-                  active
-                    ? 'border-2 border-[#FFB800] bg-gradient-to-b from-[#FFFDF2] to-[#FFF1C2] shadow-md'
-                    : 'border-[#0755E8]/20 bg-white/90 hover:border-[#0755E8]/50'
-                }`}
-              >
-                <RankMedalIcon tier={lvl.tier} size={36} />
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-[#0645C5]">Level {lvl.level}</p>
-                  <p className="font-display text-base font-extrabold text-[#061B50] tabular-nums">
-                    ${lvl.usd.toFixed(2)}
-                  </p>
-                  <p className="text-[11px] font-bold text-[#D89500] tabular-nums">+{lvl.hana} HANA</p>
-                </div>
-              </button>
-            );
-          })}
-
-          <button
-            type="button"
-            onClick={() => setSelectedLevel('all')}
-            className={`flex items-center gap-2.5 rounded-2xl border p-3 text-left transition cursor-pointer ${
-              selectedLevel === 'all'
-                ? 'hana-card-gold border-2 border-[#FFB800] shadow-md'
-                : 'border-[#FFB800]/50 bg-[#FFFDF5] hover:bg-[#FFF6D6]'
-            }`}
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#FFE98A] to-[#FFB800] text-[#061B50] shadow">
-              <Trophy className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-extrabold text-[#032B91]">All Levels</p>
-              <p className="font-display text-base font-extrabold text-[#061B50] tabular-nums">$1,250.00</p>
-              <p className="text-[11px] font-bold text-[#D89500] tabular-nums">+2,450 HANA</p>
-            </div>
-          </button>
-        </div>
-      </SectionCard> */}
-
       {/* Level Income Event Log */}
       <div ref={logRef}>
         <SectionCard
@@ -142,7 +101,7 @@ export function LevelIncomePage() {
           subtitle="Verified level commissions credited to your wallet on BSC Testnet"
           icon={<FileText className="h-4 w-4" />}
           rightSlot={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <select
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value === 'all' ? 'all' : Number(e.target.value))}
@@ -156,6 +115,31 @@ export function LevelIncomePage() {
                   </option>
                 ))}
               </select>
+
+              {/* Single Date Filter */}
+              <div className="flex items-center gap-1.5 rounded-full border border-[#0755E8]/30 bg-white px-3 py-1">
+                <Calendar className="h-3.5 w-3.5 text-[#0755E8] shrink-0" />
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="bg-transparent text-xs font-semibold text-[#032B91] focus:outline-none cursor-pointer"
+                  aria-label="Filter by date"
+                  title="Filter by date"
+                />
+                {selectedDate && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDate('')}
+                    className="ml-0.5 rounded-full p-0.5 text-[#0645C5] hover:bg-[#EAF4FF] cursor-pointer"
+                    aria-label="Clear date filter"
+                    title="Clear date filter"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
               <BlueButton
                 onClick={() => showToast('Level Logs Refreshed', 'Queried latest LevelIncomeAllotted events.', 'info')}
               >
@@ -165,12 +149,29 @@ export function LevelIncomePage() {
             </div>
           }
         >
-          <div className="mb-3 flex items-center gap-2 rounded-xl border border-[#FFB800]/45 bg-[#FFF8DF] px-3 py-2 text-xs font-semibold text-[#032B91]">
-            <ArrowRight className="h-4 w-4 shrink-0 text-[#D89500]" />
-            <span>
-              Multi-level network commissions earned by your wallet are queried directly from on-chain
-              LevelIncomeAllotted event logs with transaction hashes.
-            </span>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#FFB800]/45 bg-[#FFF8DF] px-3.5 py-2 text-xs font-semibold text-[#032B91]">
+            <div className="flex items-center gap-2">
+              <ArrowRight className="h-4 w-4 shrink-0 text-[#D89500]" />
+              <span>
+                Showing <strong className="tabular-nums">{filteredEvents.length}</strong> of{' '}
+                <strong className="tabular-nums">{levelIncomeEvents.length}</strong> events
+                {selectedLevel === 'all' ? ' across All Levels' : ` for Level ${selectedLevel}`}
+                {selectedDate && ` on ${selectedDate}`}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 tabular-nums">
+              <span className="font-extrabold text-emerald-700">+${filteredUsd.toFixed(2)} USDT</span>
+              <span className="font-extrabold text-[#D89500]">+{filteredHana.toFixed(2)} HANA</span>
+              {hasActiveFilter && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="font-bold text-[#0755E8] underline hover:text-[#032B91] cursor-pointer"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -186,26 +187,45 @@ export function LevelIncomePage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#0755E8]/10">
-                {filteredEvents.map((ev) => (
-                  <tr key={ev.id} className="hover:bg-[#EAF4FF]/60">
-                    <td className="py-3 pr-3 font-mono font-bold text-[#032B91]">
-                      {formatShortAddress(ev.fromMember)}
-                    </td>
-                    <td className="py-3 pr-3">
-                      <PackageBadge tier={`Level ${ev.level}`} />
-                    </td>
-                    <td className="py-3 pr-3 font-extrabold text-emerald-600 tabular-nums">
-                      +${ev.usdtIncome.toFixed(2)} USDT
-                    </td>
-                    <td className="py-3 pr-3 font-extrabold text-[#D89500] tabular-nums">
-                      +{ev.hanaCredited.toFixed(2)} HANA
-                    </td>
-                    <td className="py-3 pr-3 text-[#032B91]/80 tabular-nums">{ev.date}</td>
-                    <td className="py-3">
-                      <TxHashChip hash={ev.txHash} />
+                {filteredEvents.length > 0 ? (
+                  filteredEvents.map((ev) => (
+                    <tr key={ev.id} className="hover:bg-[#EAF4FF]/60">
+                      <td className="py-3 pr-3 font-mono font-bold text-[#032B91]">
+                        {formatShortAddress(ev.fromMember)}
+                      </td>
+                      <td className="py-3 pr-3">
+                        <PackageBadge tier={`Level ${ev.level}`} />
+                      </td>
+                      <td className="py-3 pr-3 font-extrabold text-emerald-600 tabular-nums">
+                        +${ev.usdtIncome.toFixed(2)} USDT
+                      </td>
+                      <td className="py-3 pr-3 font-extrabold text-[#D89500] tabular-nums">
+                        +{ev.hanaCredited.toFixed(2)} HANA
+                      </td>
+                      <td className="py-3 pr-3 text-[#032B91]/80 tabular-nums">{ev.date}</td>
+                      <td className="py-3">
+                        <TxHashChip hash={ev.txHash} />
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-xs font-semibold text-[#0645C5]">
+                      <div className="flex flex-col items-center gap-2">
+                        <span>No level income events found for the selected level or date range.</span>
+                        {hasActiveFilter && (
+                          <button
+                            type="button"
+                            onClick={clearFilters}
+                            className="rounded-full border border-[#0755E8]/30 bg-white px-3.5 py-1 text-xs font-bold text-[#032B91] hover:bg-[#EAF4FF] cursor-pointer"
+                          >
+                            Clear Filters
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
