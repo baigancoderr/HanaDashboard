@@ -6,7 +6,7 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/aafd6278-ef52-4722-a1b4-021202e1573c
+View your app in AI Studio: https://hanagouri.netlify.app
 
 ## Run Locally
 
