@@ -1,0 +1,6 @@
+{
+  "name": "HANA Blockchain MLM Platform",
+  "description": "Decentralized Blockchain MLM, Staking, Rank & Incentives, DAO Governance, and Tokenomics platform on BNB Smart Chain.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

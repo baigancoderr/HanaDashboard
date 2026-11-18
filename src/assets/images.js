@@ -1,0 +1,17 @@
+export const HANA_IMAGES = {
+  heroCrownPodium: '/src/assets/images/hana_hero_crown_podium_1794988216094.jpg',
+  goldCoinsStack: '/src/assets/images/hana_gold_coins_stack_1794988216942.jpg',
+  networkPyramid: '/src/assets/images/hana_network_pyramid_1794988217630.jpg',
+  daoCrest: '/src/assets/images/hana_dao_crest_1794988217780.jpg',
+  securityVault: '/src/assets/images/hana_security_vault_1794988218193.jpg',
+  userAvatar: '/src/assets/images/hana_user_avatar_1794988218876.jpg',
+  pageBgMesh: '/src/assets/images/hana_royal_blue_bg_1794994609666.jpg',
+  brandLogo: '/assets/aistudio/logo_9bea79ce.png',
+  tokenCoin: '/assets/aistudio/token_1a3bb72b.png',
+  bannerDashboard: '/src/assets/images/hana_slim_dashboard_1794997257044.jpg',
+  bannerStaking: '/src/assets/images/hana_slim_staking_1794997259548.jpg',
+  bannerNetwork: '/src/assets/images/hana_slim_network_1794997263222.jpg',
+  bannerDao: '/src/assets/images/hana_slim_dao_1794997258012.jpg',
+  bannerRank: '/src/assets/images/hana_slim_rank_1794997259003.jpg',
+  bannerSecurity: '/src/assets/images/hana_slim_security_1794997263385.jpg',
+};
