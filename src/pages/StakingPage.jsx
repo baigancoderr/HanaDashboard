@@ -6,9 +6,12 @@ import {
   Users,
   Clock,
   ArrowRight,
+  ChevronRight,
+  Crown,
   Info,
+  Layers,
+  Percent,
   Shield,
-  Package,
 } from 'lucide-react';
 import { STAKING_PACKAGES, useHana } from '../context/HanaContext';
 import { HANA_IMAGES } from '../assets/images';
@@ -23,6 +26,16 @@ import {
   TxHashChip,
 } from '../components/common/UiPrimitives';
 import { RankMedalIcon } from '../components/common/Icons3D';
+
+const DAO_PACKAGE = {
+  id: 'dao',
+  tier: 'DAO',
+  name: 'HANA DAO',
+  amount: 5000,
+  dailyPercent: 1,
+  capMultiplier: 2,
+  durationDays: 200,
+};
 
 export function StakingPage() {
   const navigate = useNavigate();
@@ -79,46 +92,113 @@ export function StakingPage() {
         />
       </div>
 
-      {/* New Staking Position Packages */}
+      {/* Staking Packages */}
       <SectionCard
-        title="New Staking Position"
-        subtitle={`Select a package to stake directly on-chain (Balance: $${usdtBalance.toLocaleString()} USDT)`}
-        icon={<Package className="h-4 w-4" />}
-        rightSlot={
-          <GoldButton onClick={() => setConfirmOpen(true)}>
-            Stake ${selectedPkg.amount.toLocaleString()} {selectedPkg.name}
-          </GoldButton>
-        }
+        title="Staking Packages"
+        subtitle="Choose a package to stake USDT into the verified HANA contract on BSC Testnet"
+        icon={<Layers className="h-4 w-4" />}
       >
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-          {STAKING_PACKAGES.map((pkg) => {
-            const isSelected = selectedPkg.id === pkg.id;
-            return (
-              <button
-                key={pkg.id}
-                type="button"
-                onClick={() => setSelectedPkg(pkg)}
-                className={`relative flex flex-col items-center rounded-2xl p-4 text-center transition-all cursor-pointer ${
-                  isSelected
-                    ? 'border-2 border-[#FFB800] bg-gradient-to-b from-[#FFFDF2] to-[#FFF1C2] shadow-[0_8px_24px_rgba(255,184,0,0.28)] -translate-y-0.5'
-                    : 'border border-[#0755E8]/25 bg-white/85 hover:border-[#0755E8]/55 hover:bg-white'
-                }`}
-              >
-                {pkg.popular && (
-                  <span className="absolute -top-2.5 rounded-full border border-[#D89500] bg-gradient-to-r from-[#FFE98A] to-[#FFB800] px-2.5 py-0.5 text-[10px] font-extrabold text-[#061B50] shadow">
-                    Popular
-                  </span>
-                )}
+        <div className="grid grid-cols-1 items-stretch gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+          {STAKING_PACKAGES.map((pkg) => (
+            <div
+              key={pkg.id}
+              className={`relative flex flex-col items-center justify-between rounded-2xl px-3 py-3 text-center transition-all duration-200 ${
+                pkg.popular
+                  ? 'border-2 border-[#FFD700] bg-gradient-to-b from-[#0a3bbf] via-[#0755E8] to-[#032B91] shadow-[0_8px_28px_rgba(255,184,0,0.32),0_4px_16px_rgba(7,85,232,0.35)]'
+                  : 'border border-[#0755E8]/20 bg-white/85 hover:border-[#0755E8]/50 hover:bg-white'
+              }`}
+            >
+              {/* Golden glow overlay only for popular card */}
+              {pkg.popular && (
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-2xl bg-gradient-to-b from-[#FFD700]/12 to-transparent" />
+              )}
+
+              {pkg.popular && (
+                <span className="absolute -top-2.5 rounded-full border border-[#D89500] bg-gradient-to-r from-[#FFE98A] to-[#FFB800] px-2.5 py-0.5 text-[10px] font-extrabold text-[#061B50] shadow-md">
+                  Popular
+                </span>
+              )}
+              <div className="relative z-10 flex h-[52px] items-center justify-center">
                 <RankMedalIcon tier={pkg.tier} size={46} />
-                <p className="mt-2 font-display text-sm font-bold text-[#032B91]">{pkg.name}</p>
-                <p className="mt-0.5 font-display text-xl font-extrabold text-[#061B50] tabular-nums">
+              </div>
+              <div className="relative z-10">
+                <h4 className={`text-sm font-bold ${pkg.popular ? 'text-[#FFE98A]' : 'text-[#10102B]'}`}>{pkg.name}</h4>
+                <p className={`mt-0.5 font-display text-[22px] font-extrabold leading-tight tabular-nums ${pkg.popular ? 'text-white drop-shadow-[0_2px_8px_rgba(255,215,0,0.35)]' : 'text-[#10102B]'}`}>
                   ${pkg.amount.toLocaleString()}
                 </p>
-                <p className="mt-1 text-[11px] font-semibold text-[#0645C5]/80">{pkg.dailyRate}</p>
-                <p className="mt-0.5 text-[10px] font-bold text-emerald-700">{pkg.dailyPercent}% / Day</p>
+              </div>
+              <div className="relative z-10 my-2 flex flex-col items-center gap-1">
+                <span className={`whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-bold tabular-nums ${pkg.popular ? 'border-[#FFD700]/60 bg-[#FFD700]/18 text-[#FFE98A]' : 'border-[#F8DF9A] bg-[#FFF2CC] text-[#7A5200]'}`}>
+                  {pkg.dailyPercent.toFixed(2)}% Daily ROI
+                </span>
+                <span className={`text-[11.5px] font-semibold ${pkg.popular ? 'text-blue-200/90' : 'text-[#50516C]'}`}>
+                  {pkg.capMultiplier}X Package Cap
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedPkg(pkg);
+                  setConfirmOpen(true);
+                }}
+                className="stake-now-btn relative z-10 inline-flex w-full cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-extrabold text-[#061B50] transition-all duration-150"
+              >
+                Stake Now
+                <ChevronRight className="h-3.5 w-3.5" />
               </button>
-            );
-          })}
+            </div>
+          ))}
+
+          <div>
+            <div className="dao-card relative flex h-full min-h-[222px] flex-col items-center justify-between overflow-hidden rounded-[18px] bg-gradient-to-br from-[#082B78] via-[#291A72] to-[#680E78] px-4 py-3 text-center text-white shadow-[0_12px_30px_rgba(56,24,124,0.32)]">
+              <div className="pointer-events-none absolute right-[-38px] top-[14px] z-20 rotate-[38deg] bg-gradient-to-r from-[#E62E7B] via-[#C3168F] to-[#8C0EA8] px-10 py-1 text-[9px] font-extrabold uppercase leading-tight tracking-wider text-white shadow-md">
+                Exclusive
+                <br />
+                DAO Plan
+              </div>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-2 h-24 w-40 -translate-x-1/2 rounded-full bg-[#E59DFF]/35 blur-xl"
+              />
+              {/* Rotating border glow ring */}
+              <div aria-hidden="true" className="dao-card-ring pointer-events-none absolute inset-0 rounded-[18px]" />
+              {/* Shimmer sweep */}
+              <span aria-hidden="true" className="dao-card-shimmer pointer-events-none absolute inset-0" />
+              <div className="relative z-10 flex w-full flex-col items-center">
+                <div className="flex h-[58px] items-center justify-center text-[#FFE066] drop-shadow-[0_6px_14px_rgba(255,216,77,0.45)]">
+                  <Crown className="dao-card-crown h-12 w-12" />
+                </div>
+                <span className="mt-0.5 rounded-full border border-white/25 bg-white/15 px-4 py-0.5 text-[12.5px] font-extrabold tracking-wide text-white shadow-sm">
+                  HANA DAO
+                </span>
+                <p className="mt-1 font-display text-[28px] font-extrabold leading-tight text-white tabular-nums">
+                  $5,000
+                </p>
+                <div className="mt-2 grid w-full grid-cols-2 gap-2">
+                  <div className="flex items-center justify-center gap-1 whitespace-nowrap rounded-xl border border-white/25 bg-white/15 px-2 py-1 text-[10.5px] font-bold">
+                    <Percent className="h-3 w-3 text-[#FFE066]" />
+                    <span>1.00% Daily ROI</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-1 whitespace-nowrap rounded-xl border border-white/25 bg-white/15 px-2 py-1 text-[10.5px] font-bold">
+                    <Layers className="h-3 w-3 text-[#FFE066]" />
+                    <span>2X Package Cap</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedPkg(DAO_PACKAGE);
+                  setConfirmOpen(true);
+                }}
+                className="relative z-10 mt-2.5 inline-flex w-full cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gradient-to-r from-[#FFE98A] to-[#FFB800] px-4 py-2 text-[13px] font-extrabold text-[#1F1502] shadow-md transition hover:brightness-105"
+              >
+                <Crown className="h-4 w-4" />
+                Join DAO Now
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </SectionCard>
 

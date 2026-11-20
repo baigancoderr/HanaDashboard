@@ -21,6 +21,7 @@ import {
   Settings,
   BookOpen,
   HelpCircle,
+  
   X,
 } from 'lucide-react';
 import { HanaLogo } from '../common/HanaLogo';
@@ -72,7 +73,7 @@ const NAV_SECTIONS = [
   {
     heading: 'TOOLS',
     items: [
-      { label: 'Settings', to: '/settings', icon: Settings },
+      { label: 'Profile', to: '/settings', icon: Settings },
       // { label: 'Resources', to: '/resources', icon: BookOpen },
       // { label: 'Support', to: '/support', icon: HelpCircle },
     ],
@@ -105,7 +106,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }) {
         </div>
 
         {/* Scrollable Navigation */}
-        <nav className="relative z-10 flex-1 space-y-3 overflow-y-auto px-3 py-3.5" aria-label="Primary Sidebar Navigation">
+        <nav className="relative z-10 flex-1 space-y-4 overflow-y-auto px-3 py-4" aria-label="Primary Sidebar Navigation">
           <NavLink
             to="/"
             end
@@ -138,7 +139,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }) {
                 <div className="my-2 h-[1px] bg-[#FFD700]/30" />
               )}
 
-              <ul className="space-y-0.5">
+              <ul className="space-y-1">
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   const isDAO = item.to === '/dao';

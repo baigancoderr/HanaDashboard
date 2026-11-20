@@ -54,10 +54,10 @@ export function SettingsPage() {
   return (
     <div className="space-y-5">
       <HeroBanner
-        title="Settings"
+        title="Profile"
         subtitle="Manage your on-chain identity, smart contract verification, and account preferences"
         imageSrc={HANA_IMAGES.bannerSecurity}
-        imageAlt="HANA Blockchain Settings & Security"
+        imageAlt="HANA Blockchain profile & Security"
       />
 
       {/* Profile & On-Chain Identity */}

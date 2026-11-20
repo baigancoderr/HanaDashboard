@@ -277,7 +277,7 @@ export function Topbar({ onToggleSidebar }) {
                   className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-[#032B91] hover:bg-[#EAF4FF] cursor-pointer"
                 >
                   <Settings className="h-4 w-4 text-[#0755E8]" />
-                  Account Settings
+                  Account Profile
                 </button>
                 <button
                   type="button"

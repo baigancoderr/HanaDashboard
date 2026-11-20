@@ -36,10 +36,10 @@ export function DaoPage() {
         ctaLabel="Stake DAO Now →"
         onCtaClick={() => setConfirmOpen(true)}
         imageSrc={HANA_IMAGES.bannerDao}
-        imageAlt="HANA Special $5,000 DAO Staker Crest"
+        imageAlt="HANA Special $5,000 DAO  Crest"
         rightBadge={
           <span className="rounded-xl border border-[#FFE98A] bg-gradient-to-r from-[#032B91]/90 to-[#0645C5]/90 px-3 py-1 text-xs font-extrabold text-[#FFE98A] shadow">
-            Special $5,000 DAO Staker
+            Special $5,000 DAO 
           </span>
         }
       />
@@ -76,11 +76,11 @@ export function DaoPage() {
 
       {/* Main 2-Column Showcase */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-1">
-        {/* Left: Dark Royal Blue Luxury Special $5,000 DAO Staker Package */}
+        {/* Left: Dark Royal Blue Luxury Special $5,000 DAO  Package */}
         <SectionCard
           dark
           className="lg:col-span-7"
-          title="Special $5,000 DAO Staker Package"
+          title="Special $5,000 DAO  Package"
           icon={<Crown className="h-4 w-4" />}
           rightSlot={
             <span className="rounded-full bg-gradient-to-r from-[#FFE98A] to-[#FFB800] px-3 py-0.5 text-xs font-extrabold text-[#061B50]">
@@ -269,7 +269,7 @@ export function DaoPage() {
       <ConfirmModal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        title="Activate $5,000 DAO Staker Package"
+        title="Activate $5,000 DAO  Package"
         description="Join the exclusive 500-member HANA DAO pool with a 5X stake cap multiplier and 2.50% daily rewards for 500 days."
         confirmLabel="Confirm $5,000 DAO Stake"
         onConfirm={stakeDaoPackage}

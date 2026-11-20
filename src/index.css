@@ -123,6 +123,99 @@
 }
 
 /* =============================================
+   DAO Staking Card Animations
+   ============================================= */
+
+/* Keyframe: card border pulsing glow */
+@keyframes dao-card-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1.5px rgba(255, 215, 0, 0.5),
+      0 0 18px 4px rgba(255, 184, 0, 0.3),
+      0 0 40px 10px rgba(230, 46, 123, 0.18);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(255, 215, 0, 0.9),
+      0 0 32px 10px rgba(255, 184, 0, 0.55),
+      0 0 60px 20px rgba(230, 46, 123, 0.32);
+  }
+}
+
+/* Keyframe: shimmer diagonal sweep */
+@keyframes dao-card-shimmer-sweep {
+  0%   { transform: translateX(-140%) skewX(-16deg); opacity: 0; }
+  10%  { opacity: 0.6; }
+  60%  { transform: translateX(160%) skewX(-16deg); opacity: 0.6; }
+  61%  { opacity: 0; }
+  100% { transform: translateX(160%) skewX(-16deg); opacity: 0; }
+}
+
+/* Keyframe: crown float + rotate */
+@keyframes dao-card-crown {
+  0%, 100% { transform: translateY(0) rotate(-4deg) scale(1); filter: drop-shadow(0 6px 14px rgba(255,216,77,0.45)); }
+  40%       { transform: translateY(-6px) rotate(4deg) scale(1.08); filter: drop-shadow(0 10px 22px rgba(255,216,77,0.75)); }
+  70%       { transform: translateY(-3px) rotate(-2deg) scale(1.04); }
+}
+
+/* Keyframe: card subtle float */
+@keyframes dao-card-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+/* ---- DAO Card container ---- */
+.dao-card {
+  animation: dao-card-glow 2.6s ease-in-out infinite, dao-card-float 4s ease-in-out infinite;
+}
+
+/* ---- Shimmer layer ---- */
+.dao-card-shimmer {
+  width: 50%;
+  background: linear-gradient(
+    108deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 80%
+  );
+  animation: dao-card-shimmer-sweep 3.2s ease-in-out infinite;
+  z-index: 5;
+  border-radius: 18px;
+}
+
+/* ---- Crown icon ---- */
+.dao-card-crown {
+  animation: dao-card-crown 3s ease-in-out infinite;
+}
+
+/* =============================================
+   Staking Package Card — Stake Now Button
+   ============================================= */
+
+.stake-now-btn {
+  background: linear-gradient(180deg, #ffe98a 0%, #ffd700 42%, #ffb800 85%, #d89500 100%);
+  border: 1px solid rgba(255, 233, 138, 0.9);
+  box-shadow:
+    0 4px 14px rgba(255, 184, 0, 0.42),
+    0 0 0 1.5px rgba(7, 85, 232, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.stake-now-btn:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 6px 20px rgba(255, 184, 0, 0.58),
+    0 0 0 1.5px rgba(39, 217, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.stake-now-btn:active {
+  transform: translateY(0);
+}
+
+/* =============================================
    DAO Program Sidebar Highlight & Animations
    ============================================= */
 

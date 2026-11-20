@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Wallet,
@@ -29,6 +29,7 @@ import { RankMedalIcon, UsdtBadgeIcon, HanaCoinBadgeIcon } from '../components/c
 
 export function DashboardPage() {
   const navigate = useNavigate();
+  const [hoveredMonthIndex, setHoveredMonthIndex] = useState(null);
   const {
     usdtBalance,
     hanaBalance,
@@ -107,6 +108,7 @@ export function DashboardPage() {
     { key: 'rank', color: '#F59E0B', label: 'Rank Income' },
     { key: 'bonus', color: '#94A3B8', label: 'Reward & Bonus' },
   ];
+  const hoveredMonth = hoveredMonthIndex === null ? null : chartData[hoveredMonthIndex];
 
   return (
     <div className="space-y-5">
@@ -192,6 +194,8 @@ export function DashboardPage() {
                 <ChevronRight className="h-4 w-4" />
               </span>
             </div>
+
+            
           </div>
         </div>
       </div>
@@ -312,7 +316,38 @@ export function DashboardPage() {
           </div>
 
           {/* SVG Line Chart */}
-          <div className="w-full overflow-hidden">
+          <div
+            className="relative w-full overflow-hidden rounded-xl border border-[#0755E8]/10 bg-gradient-to-br from-white to-[#F5F9FF] p-2"
+            onMouseLeave={() => setHoveredMonthIndex(null)}
+          >
+            {hoveredMonth && (
+              <div
+                className="pointer-events-none absolute top-2 z-10 w-36 rounded-xl border border-[#0755E8]/15 bg-white/95 p-2.5 shadow-lg backdrop-blur-sm"
+                style={{
+                  left: `${(toX(hoveredMonthIndex) / chartW) * 100}%`,
+                  transform:
+                    hoveredMonthIndex === 0
+                      ? 'translateX(0)'
+                      : hoveredMonthIndex === chartData.length - 1
+                      ? 'translateX(-100%)'
+                      : 'translateX(-50%)',
+                }}
+                role="status"
+              >
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[#0645C5]">{hoveredMonth.month} Earnings</p>
+                <p className="mt-0.5 font-display text-sm font-extrabold text-[#061B50] tabular-nums">
+                  ${lines.reduce((sum, line) => sum + hoveredMonth[line.key], 0).toLocaleString()}
+                </p>
+                <div className="mt-1.5 grid grid-cols-2 gap-x-2 gap-y-1">
+                  {lines.map((line) => (
+                    <span key={line.key} className="flex items-center gap-1 text-[9px] font-semibold text-[#032B91]">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: line.color }} />
+                      {line.label.split(' ')[0]} ${hoveredMonth[line.key]}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             <svg
               viewBox={`0 0 ${chartW} ${chartH}`}
               preserveAspectRatio="none"
@@ -402,21 +437,53 @@ export function DashboardPage() {
                   {d.month}
                 </text>
               ))}
+
+              {chartData.map((d, i) => {
+                const left = i === 0 ? padL : toX(i) - xStep / 2;
+                const right = i === chartData.length - 1 ? chartW - padR : toX(i) + xStep / 2;
+                return (
+                  <rect
+                    key={`hover-${d.month}`}
+                    x={left}
+                    y={padT}
+                    width={right - left}
+                    height={innerH}
+                    fill="transparent"
+                    onMouseEnter={() => setHoveredMonthIndex(i)}
+                    aria-hidden="true"
+                  />
+                );
+              })}
+
+              {hoveredMonth && (
+                <>
+                  <line
+                    x1={toX(hoveredMonthIndex)}
+                    y1={padT}
+                    x2={toX(hoveredMonthIndex)}
+                    y2={padT + innerH}
+                    stroke="#0755E8"
+                    strokeOpacity="0.35"
+                    strokeDasharray="3 3"
+                  />
+                  {lines.map((line) => (
+                    <circle
+                      key={`hover-dot-${line.key}`}
+                      cx={toX(hoveredMonthIndex)}
+                      cy={toY(hoveredMonth[line.key])}
+                      r="4"
+                      fill={line.color}
+                      stroke="white"
+                      strokeWidth="1.5"
+                    />
+                  ))}
+                </>
+              )}
             </svg>
           </div>
 
           {/* Summary row */}
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {breakdown.map((b) => (
-              <div key={b.label} className="rounded-xl border border-[#0755E8]/12 bg-[#F5F9FF] px-3 py-2">
-                <p className="text-[10px] font-semibold text-[#0645C5]">{b.label}</p>
-                <p className="mt-0.5 font-display text-sm font-extrabold text-[#061B50] tabular-nums">
-                  ${b.amount.toFixed(0)}
-                  <span className="ml-1 text-[10px] font-bold text-[#0645C5]/70">({b.pct}%)</span>
-                </p>
-              </div>
-            ))}
-          </div>
+          
         </SectionCard>
 
         <SectionCard
