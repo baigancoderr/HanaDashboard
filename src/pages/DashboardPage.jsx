@@ -75,9 +75,38 @@ export function DashboardPage() {
     { label: 'Reward & Bonus', amount: 250, pct: 8.8, color: '#94A3B8' },
   ];
 
-  const radius = 38;
-  const circ = 2 * Math.PI * radius;
-  let offset = 0;
+  // Line chart data — monthly earnings trend
+  const chartData = [
+    { month: 'Jun', direct: 320, level: 480, rank: 150, bonus: 80 },
+    { month: 'Jul', direct: 410, level: 620, rank: 180, bonus: 110 },
+    { month: 'Aug', direct: 500, level: 750, rank: 240, bonus: 140 },
+    { month: 'Sep', direct: 460, level: 820, rank: 290, bonus: 160 },
+    { month: 'Oct', direct: 680, level: 980, rank: 350, bonus: 190 },
+    { month: 'Nov', direct: 850, level: 1250, rank: 500, bonus: 250 },
+  ];
+  const chartW = 420;
+  const chartH = 120;
+  const padL = 32;
+  const padR = 12;
+  const padT = 10;
+  const padB = 24;
+  const innerW = chartW - padL - padR;
+  const innerH = chartH - padT - padB;
+  const allVals = chartData.flatMap((d) => [d.direct, d.level, d.rank, d.bonus]);
+  const maxVal = Math.max(...allVals);
+  const xStep = innerW / (chartData.length - 1);
+  const toX = (i) => padL + i * xStep;
+  const toY = (v) => padT + innerH - (v / maxVal) * innerH;
+  const makePath = (key) =>
+    chartData.map((d, i) => `${i === 0 ? 'M' : 'L'}${toX(i).toFixed(1)},${toY(d[key]).toFixed(1)}`).join(' ');
+  const makeArea = (key) =>
+    `${makePath(key)} L${toX(chartData.length - 1).toFixed(1)},${(padT + innerH).toFixed(1)} L${padL},${(padT + innerH).toFixed(1)} Z`;
+  const lines = [
+    { key: 'level', color: '#0755E8', label: 'Level Income' },
+    { key: 'direct', color: '#FFD700', label: 'Direct Income' },
+    { key: 'rank', color: '#F59E0B', label: 'Rank Income' },
+    { key: 'bonus', color: '#94A3B8', label: 'Reward & Bonus' },
+  ];
 
   return (
     <div className="space-y-5">
@@ -92,20 +121,17 @@ export function DashboardPage() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#032B91]/70 via-[#0436AE]/36 to-transparent sm:w-3/5" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#032B91]/35 via-transparent to-[#032B91]/35" />
 
-        <div className="relative z-10 flex flex-col gap-5">
-          <div className="max-w-xl space-y-3.5">
+        <div className="relative z-10 flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+          <div className="max-w-xl flex-1 space-y-3.5">
             <h1 className="font-display text-2xl font-extrabold tracking-tight text-balance drop-shadow sm:text-4xl">
               Build • Grow • <span className="text-[#FFD700]">Earn</span>
             </h1>
 
             {/* Referral Link Box */}
             <div className="rounded-2xl border border-white/25 bg-[#032B91]/65 p-3.5 backdrop-blur-md">
-              <div className="mb-2 flex items-center justify-between gap-2 text-xs font-bold text-[#FFE98A]">
-                <span className="inline-flex items-center gap-2">
-                  <Link2 className="h-4 w-4" />
-                  <span>Your Referral Link</span>
-                </span>
-                <span className="text-[11px] font-semibold text-blue-100/90">5% Direct Reward</span>
+              <div className="mb-2 flex items-center gap-2 text-xs font-bold text-[#FFE98A]">
+                <Link2 className="h-4 w-4" />
+                <span>Your Referral Link</span>
               </div>
               <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
                 <div className="flex flex-1 items-center overflow-hidden rounded-xl border border-white/25 bg-white">
@@ -128,68 +154,43 @@ export function DashboardPage() {
                 <GoldButton onClick={handleShare} className="px-4 py-2 text-xs sm:text-sm">
                   Share Link <Share2 className="h-3.5 w-3.5" />
                 </GoldButton>
+                <GoldButton onClick={() => navigate('/staking')} className="px-4 py-2 text-xs sm:text-sm">
+                  Invest Now →
+                </GoldButton>
               </div>
             </div>
-          </div>
 
-          {/* Full-Width Current Rank Showcase with Invest Now & Rank Navigation */}
-          <div className="w-full rounded-2xl border border-[#FFD700]/55 bg-gradient-to-r from-[#061B50]/88 via-[#032B91]/82 to-[#0645C5]/78 p-4 backdrop-blur-md shadow-[0_10px_28px_rgba(3,43,145,0.35)]">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              {/* Rank Identity */}
-              <div className="flex items-center gap-3.5">
-                <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#FFD700]/50 bg-[#061B50]/80 shadow-inner">
-                  <RankMedalIcon tier="Silver" size={46} />
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-[11px] font-bold tracking-wider text-[#FFE98A] uppercase">
-                    Current Rank
-                  </p>
-                  <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="font-display text-xl font-extrabold text-white leading-none">
-                      Silver
-                    </span>
-                    <span className="text-xs font-bold text-[#FFD700] tabular-nums">
-                      $250 / Week
-                    </span>
-                  </div>
-                  <p className="text-[11px] font-medium text-blue-100/90 tabular-nums">
-                    Matching: $12,850 / $25,000 · 3 Months Term
+            {/* Rank Box right below Referral Link */}
+            <div
+              onClick={() => navigate('/rank')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && navigate('/rank')}
+              className="flex flex-col gap-3 rounded-2xl border border-[#FFD700]/45 bg-[#032B91]/70 p-3.5 backdrop-blur-md transition hover:border-[#FFD700] cursor-pointer sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <RankMedalIcon tier="Silver" size={44} />
+                <div>
+                  <p className="text-[11px] font-bold tracking-wide text-[#FFE98A] uppercase">Current Rank</p>
+                  <p className="font-display text-lg font-extrabold text-white leading-tight">
+                    Silver <span className="text-xs font-semibold text-blue-100">· $250 / Week</span>
                   </p>
                 </div>
               </div>
 
-              {/* Next Rank Progress */}
-              <div className="flex-1 lg:max-w-md space-y-1.5">
+              <div className="flex-1 sm:max-w-xs space-y-1.5">
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-blue-100">
-                    Next: <strong className="text-[#FFD700]">Gold Rank</strong>
-                  </span>
+                  <span className="text-blue-100">Next Rank: <strong className="text-[#FFD700]">Gold</strong></span>
                   <span className="text-[#FFE98A] tabular-nums">68%</span>
                 </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full border border-white/25 bg-[#061B50]/90 p-0.5">
+                <div className="h-2.5 w-full overflow-hidden rounded-full border border-white/25 bg-[#061B50]/80 p-0.5">
                   <div className="hana-progress-gold h-full rounded-full" style={{ width: '68%' }} />
                 </div>
-                <p className="text-[11px] font-medium text-blue-100/80 tabular-nums">
-                  $12,150 matching volume left for Gold
-                </p>
               </div>
 
-              {/* Invest Now & Rank Actions */}
-              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-                <GoldButton
-                  onClick={() => navigate('/staking')}
-                  className="px-4 py-2 text-xs sm:text-sm"
-                >
-                  Invest Now <ArrowRight className="h-3.5 w-3.5" />
-                </GoldButton>
-                <button
-                  type="button"
-                  onClick={() => navigate('/rank')}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#FFD700]/60 bg-white/10 px-3.5 py-2 text-xs font-bold text-[#FFE98A] transition hover:bg-white/20 hover:text-white whitespace-nowrap shrink-0 cursor-pointer"
-                >
-                  Rank Details <ChevronRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
+              <span className="hidden sm:inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 text-[#FFD700]">
+                <ChevronRight className="h-4 w-4" />
+              </span>
             </div>
           </div>
         </div>
@@ -300,50 +301,121 @@ export function DashboardPage() {
           title="Earnings Breakdown"
           icon={<BarChart3 className="h-4 w-4" />}
         >
-          <div className="flex flex-col items-center gap-5 sm:flex-row">
-            <div className="relative flex h-32 w-32 shrink-0 items-center justify-center">
-              <svg viewBox="0 0 100 100" className="h-32 w-32 -rotate-90">
-                {breakdown.map((item) => {
-                  const dash = (item.pct / 100) * circ;
-                  const currentOffset = offset;
-                  offset += dash;
-                  return (
-                    <circle
-                      key={item.label}
-                      cx="50"
-                      cy="50"
-                      r={radius}
-                      fill="transparent"
-                      stroke={item.color}
-                      strokeWidth="14"
-                      strokeDasharray={`${dash} ${circ - dash}`}
-                      strokeDashoffset={-currentOffset}
-                    />
-                  );
-                })}
-              </svg>
-              <div className="absolute text-center">
-                <p className="font-display text-base font-extrabold text-[#061B50] tabular-nums">
-                  ${totalEarned.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                </p>
-                <p className="text-[10px] font-bold text-[#0645C5]">Total Earnings</p>
-              </div>
-            </div>
+          {/* Legend */}
+          <div className="mb-3 flex flex-wrap gap-3">
+            {lines.map((l) => (
+              <span key={l.key} className="flex items-center gap-1.5 text-xs font-semibold text-[#032B91]">
+                <span className="h-2.5 w-5 rounded-full inline-block" style={{ backgroundColor: l.color }} />
+                {l.label}
+              </span>
+            ))}
+          </div>
 
-            <div className="w-full space-y-2 text-xs sm:text-sm">
-              {breakdown.map((b) => (
-                <div key={b.label} className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-2 font-semibold text-[#032B91]">
-                    <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: b.color }} />
-                    {b.label}
-                  </span>
-                  <span className="font-bold text-[#061B50] tabular-nums">
-                    ${b.amount.toFixed(2)}{' '}
-                    <span className="text-[#0645C5]/75">({b.pct}%)</span>
-                  </span>
-                </div>
+          {/* SVG Line Chart */}
+          <div className="w-full overflow-hidden">
+            <svg
+              viewBox={`0 0 ${chartW} ${chartH}`}
+              preserveAspectRatio="none"
+              className="w-full"
+              style={{ height: '140px' }}
+            >
+              <defs>
+                {lines.map((l) => (
+                  <linearGradient key={l.key} id={`grad-${l.key}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={l.color} stopOpacity="0.18" />
+                    <stop offset="100%" stopColor={l.color} stopOpacity="0" />
+                  </linearGradient>
+                ))}
+              </defs>
+
+              {/* Grid lines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((t) => {
+                const y = padT + innerH * t;
+                return (
+                  <line
+                    key={t}
+                    x1={padL} y1={y.toFixed(1)}
+                    x2={chartW - padR} y2={y.toFixed(1)}
+                    stroke="#0755E8" strokeOpacity="0.08" strokeWidth="1"
+                  />
+                );
+              })}
+
+              {/* Y-axis labels */}
+              {[0, 0.5, 1].map((t) => {
+                const v = Math.round(maxVal * (1 - t));
+                const y = padT + innerH * t;
+                return (
+                  <text key={t} x={padL - 4} y={y + 4} textAnchor="end"
+                    fontSize="8" fill="#0645C5" fontWeight="600" opacity="0.7">
+                    ${v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v}
+                  </text>
+                );
+              })}
+
+              {/* Area fills */}
+              {lines.map((l) => (
+                <path key={`area-${l.key}`} d={makeArea(l.key)} fill={`url(#grad-${l.key})`} />
               ))}
-            </div>
+
+              {/* Lines */}
+              {lines.map((l) => (
+                <path
+                  key={`line-${l.key}`}
+                  d={makePath(l.key)}
+                  fill="none"
+                  stroke={l.color}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              ))}
+
+              {/* Dots on latest point */}
+              {lines.map((l) => {
+                const last = chartData[chartData.length - 1];
+                return (
+                  <circle
+                    key={`dot-${l.key}`}
+                    cx={toX(chartData.length - 1).toFixed(1)}
+                    cy={toY(last[l.key]).toFixed(1)}
+                    r="3.5"
+                    fill={l.color}
+                    stroke="white"
+                    strokeWidth="1.5"
+                  />
+                );
+              })}
+
+              {/* X-axis month labels */}
+              {chartData.map((d, i) => (
+                <text
+                  key={d.month}
+                  x={toX(i).toFixed(1)}
+                  y={padT + innerH + 16}
+                  textAnchor="middle"
+                  fontSize="8"
+                  fill="#0645C5"
+                  fontWeight="600"
+                  opacity="0.75"
+                >
+                  {d.month}
+                </text>
+              ))}
+            </svg>
+          </div>
+
+          {/* Summary row */}
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {breakdown.map((b) => (
+              <div key={b.label} className="rounded-xl border border-[#0755E8]/12 bg-[#F5F9FF] px-3 py-2">
+                <p className="text-[10px] font-semibold text-[#0645C5]">{b.label}</p>
+                <p className="mt-0.5 font-display text-sm font-extrabold text-[#061B50] tabular-nums">
+                  ${b.amount.toFixed(0)}
+                  <span className="ml-1 text-[10px] font-bold text-[#0645C5]/70">({b.pct}%)</span>
+                </p>
+              </div>
+            ))}
           </div>
         </SectionCard>
 

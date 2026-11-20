@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Menu,
   ChevronDown,
   Copy,
   Bell,
@@ -59,10 +58,14 @@ export function Topbar({ onToggleSidebar }) {
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition hover:bg-white/20 cursor-pointer"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white transition hover:bg-white/15 cursor-pointer"
           aria-label="Toggle sidebar navigation"
         >
-          <Menu className="h-5 w-5" />
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="2" y1="5" x2="18" y2="5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="2" y1="10" x2="11" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="2" y1="15" x2="18" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
         </button>
 
         <div className="hidden min-w-0 items-center gap-2.5 md:flex">

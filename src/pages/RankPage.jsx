@@ -66,7 +66,7 @@ export function RankPage() {
       />
 
       {/* 5 KPI Cards Row */}
-      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           icon={<Award className="h-5 w-5" />}
           label="Current Rank"
@@ -127,7 +127,7 @@ export function RankPage() {
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="rounded-xl border border-[#0755E8]/20 bg-white/90 p-3 text-center">
-                <p className="text-xs font-semibold text-[#0645C5]">Self-Contribution</p>
+                <p className="text-xs font-semibold text-[#0645C5]">Self</p>
                 <p className="mt-1 font-display text-sm font-extrabold text-[#061B50] tabular-nums">
                   $5,000 / $7,500
                 </p>
@@ -226,17 +226,6 @@ export function RankPage() {
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* Rank Tier Header */}
                     <div className="flex items-center gap-3.5 lg:w-[250px] shrink-0">
-                      <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg font-mono text-xs font-extrabold tabular-nums ${
-                          isCurrent
-                            ? 'bg-[#FFB800] text-[#061B50]'
-                            : isAchieved
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-[#EAF4FF] text-[#032B91]'
-                        }`}
-                      >
-                        0{r.no}
-                      </span>
                       <RankMedalIcon tier={r.name} size={46} />
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
@@ -252,7 +241,7 @@ export function RankPage() {
                     {/* 4 Qualification Requirements with Hairline Dividers */}
                     <div className="grid flex-1 grid-cols-2 gap-3 border-y border-[#0755E8]/12 py-3 sm:grid-cols-4 lg:border-y-0 lg:border-x lg:px-5 lg:py-0">
                       <div>
-                        <p className="text-[11px] font-semibold text-[#0645C5]/80">Self-Contribution</p>
+                        <p className="text-[11px] font-semibold text-[#0645C5]/80">Self</p>
                         <p className="mt-0.5 font-display text-sm font-extrabold text-[#061B50] tabular-nums">
                           ${r.selfContribution.toLocaleString()}
                         </p>
@@ -278,17 +267,19 @@ export function RankPage() {
                     </div>
 
                     {/* Weekly Reward + Tier Progress */}
-                    <div className="flex items-center justify-between gap-4 lg:w-[240px] shrink-0">
-                      <div>
+                    <div className="flex flex-col gap-2 lg:w-[220px] shrink-0">
+                      <div className="flex items-center justify-between gap-2">
                         <p className="text-[11px] font-semibold text-[#0645C5]/80">Weekly Reward</p>
-                        <p className="font-display text-lg font-extrabold text-emerald-700 tabular-nums">
+                        <p className="font-display text-base font-extrabold text-emerald-700 tabular-nums">
                           ${r.weeklyReward.toLocaleString()}
                           <span className="text-xs font-bold text-[#0645C5]"> / wk</span>
                         </p>
                       </div>
-
-                      <div className="w-28 space-y-1 text-right">
-                        <span className="text-[11px] font-extrabold text-[#032B91] tabular-nums">{pct}%</span>
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <p className="text-[11px] font-semibold text-[#0645C5]/80">Progress</p>
+                          <span className="text-[11px] font-extrabold text-[#032B91] tabular-nums">{pct}%</span>
+                        </div>
                         <div className="h-2 w-full overflow-hidden rounded-full bg-[#DCEBFF]">
                           <div
                             className={`h-full rounded-full ${
@@ -315,7 +306,7 @@ export function RankPage() {
                 <tr className="border-b border-[#0755E8]/15 text-[#0645C5]">
                   <th className="py-2.5 pr-3 font-bold">No.</th>
                   <th className="py-2.5 pr-3 font-bold">Rank</th>
-                  <th className="py-2.5 pr-3 font-bold">Self-Contribution</th>
+                  <th className="py-2.5 pr-3 font-bold">Self</th>
                   <th className="py-2.5 pr-3 font-bold">Direct Team</th>
                   <th className="py-2.5 pr-3 font-bold">Required Legs</th>
                   <th className="py-2.5 pr-3 font-bold">Matching Business</th>
