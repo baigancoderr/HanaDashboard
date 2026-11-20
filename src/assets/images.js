@@ -14,4 +14,11 @@ export const HANA_IMAGES = {
   bannerDao: '/src/assets/images/hana_slim_dao_1794997258012.jpg',
   bannerRank: '/src/assets/images/hana_slim_rank_1794997259003.jpg',
   bannerSecurity: '/src/assets/images/hana_slim_security_1794997263385.jpg',
+  ecosystemHero: '/src/assets/images/ecosystem_hero_banner_clean_1795158633573.jpg',
+  productPredict: '/src/assets/images/hana_predict_card_1795158193683.jpg',
+  productGaming: '/src/assets/images/hana_gaming_card_1795158193843.jpg',
+  productAiWallet: '/src/assets/images/hana_ai_wallet_card_1795158195026.jpg',
+  productDachiCard: '/src/assets/images/hana_dachi_card_1795158194165.jpg',
+  productBlockchain: '/src/assets/images/hana_blockchain_card_1795158194758.jpg',
 };
+

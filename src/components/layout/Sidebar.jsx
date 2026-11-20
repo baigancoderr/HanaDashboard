@@ -21,7 +21,7 @@ import {
   Settings,
   BookOpen,
   HelpCircle,
-  
+  Globe,
   X,
 } from 'lucide-react';
 import { HanaLogo } from '../common/HanaLogo';
@@ -68,6 +68,12 @@ const NAV_SECTIONS = [
     items: [
       { label: 'Withdraw', to: '/withdraw', icon: Wallet },
       { label: 'Transactions', to: '/transactions', icon: ArrowLeftRight },
+    ],
+  },
+  {
+    heading: 'ECOSYSTEM',
+    items: [
+      { label: 'HANA Ecosystem', to: '/ecosystem', icon: Globe },
     ],
   },
   {

@@ -16,6 +16,7 @@ import { RankPage } from './pages/RankPage';
 import { WithdrawPage } from './pages/WithdrawPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { EcosystemPage } from './pages/EcosystemPage';
 import {
   PackagesPage,
   ReferralPage,
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="/rank-rewards" element={<RankRewardsPage />} />
             <Route path="/withdraw" element={<WithdrawPage />} />
             <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/ecosystem" element={<EcosystemPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/support" element={<SupportPage />} />
