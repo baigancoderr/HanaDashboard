@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Cpu,
   CreditCard,
   Gamepad2,
@@ -17,8 +19,7 @@ import {
 import { useHana } from '../context/HanaContext';
 import { HANA_IMAGES } from '../assets/images';
 import { GoldButton, BlueButton } from '../components/common/UiPrimitives';
-import { ProductCarousel } from '../components/common/ProductCarousel';
-import { TeamCarousel } from '../components/common/TeamCarousel';
+import CircularGallery from '../components/common/CircularGallery';
 
 const ECOSYSTEM_PRODUCTS = [
   {
@@ -38,7 +39,7 @@ const ECOSYSTEM_PRODUCTS = [
     features: [
       'Decentralized Predictions',
       'Transparent Outcomes',
-     
+
     ],
     accessRequirement: 'HANA Wallet & Active Stakers',
     synergyActionLabel: 'Stake HANA Meantime',
@@ -61,7 +62,7 @@ const ECOSYSTEM_PRODUCTS = [
     features: [
       'Interactive Gaming',
       'Play-to-Earn Rewards',
-     
+
     ],
     accessRequirement: 'HANA Community Members',
     synergyActionLabel: 'Explore HANA Tokenomics',
@@ -84,7 +85,7 @@ const ECOSYSTEM_PRODUCTS = [
     features: [
       'Smart AI Assistant',
       'Multi-Chain Wallet',
-    
+
     ],
     accessRequirement: 'All Ecosystem Users',
     synergyActionLabel: 'View Token Swap',
@@ -106,7 +107,7 @@ const ECOSYSTEM_PRODUCTS = [
       'Global virtual and physical card issuance with real-time USDT and HANA balance conversion is in banking partner onboarding.',
     features: [
       'Global Payments',
-     
+
       'Crypto Utility',
     ],
     accessRequirement: 'Verified HANA Accounts',
@@ -129,7 +130,7 @@ const ECOSYSTEM_PRODUCTS = [
       'Dedicated EVM-compatible Layer-1 validator nodes, public explorer tooling, and cross-ecosystem settlement bridges are in active testnet.',
     features: [
       'Secure Infrastructure',
-      
+
       'Decentralized Network',
     ],
     accessRequirement: 'DAO & Validator Participants',
@@ -183,6 +184,21 @@ export function EcosystemPage() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [comingSoonProductId, setComingSoonProductId] = useState(null);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'carousel'
+  const [activeProductIndex, setActiveProductIndex] = useState(0);
+  const galleryRef = useRef(null);
+
+  const galleryItems = useMemo(() => {
+    return ECOSYSTEM_PRODUCTS.map((product) => ({
+      id: product.id,
+      image: product.image,
+      text: product.connectedTitle,
+      description: product.summary,
+      product,
+      onExplore: (item) => {
+        setComingSoonProductId(item.id);
+      },
+    }));
+  }, []);
 
   useEffect(() => {
     if (!comingSoonProductId) return;
@@ -226,7 +242,7 @@ export function EcosystemPage() {
 
         <div className="relative z-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div className="max-w-2xl space-y-4">
-        
+
 
             <h1 className="font-display text-3xl font-extrabold leading-[1.12] tracking-tight text-balance drop-shadow-[0_2px_12px_rgba(3,43,145,0.7)] sm:text-4xl lg:text-[42px]">
               One Ecosystem.{' '}
@@ -239,11 +255,11 @@ export function EcosystemPage() {
               Explore the next generation of blockchain, AI, gaming and digital finance — unified by the HANA token economy.
             </p>
 
-          
+
           </div>
 
           <div className="flex shrink-0 flex-col items-start gap-3 lg:items-end">
-           
+
             <GoldButton onClick={() => scrollToProducts('all')} className="px-6 py-3">
               Explore Our Products
               <ArrowRight className="h-4 w-4" />
@@ -272,11 +288,10 @@ export function EcosystemPage() {
             type="button"
             onClick={() => setViewMode('grid')}
             aria-pressed={viewMode === 'grid'}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-              viewMode === 'grid'
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${viewMode === 'grid'
                 ? 'bg-gradient-to-r from-[#0755E8] to-[#032B91] text-white shadow-sm'
                 : 'text-[#032B91]/80 hover:bg-white/70 hover:text-[#032B91]'
-            }`}
+              }`}
           >
             <LayoutGrid className="h-3.5 w-3.5" />
             Grid
@@ -285,11 +300,10 @@ export function EcosystemPage() {
             type="button"
             onClick={() => setViewMode('carousel')}
             aria-pressed={viewMode === 'carousel'}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-              viewMode === 'carousel'
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${viewMode === 'carousel'
                 ? 'bg-gradient-to-r from-[#0755E8] to-[#032B91] text-white shadow-sm'
                 : 'text-[#032B91]/80 hover:bg-white/70 hover:text-[#032B91]'
-            }`}
+              }`}
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
             Carousel
@@ -297,119 +311,163 @@ export function EcosystemPage() {
         </div>
       </div>
 
-      {/* Carousel View */}
+      {/* 3D Circular Gallery View */}
       {viewMode === 'carousel' && (
-        <div className="hana-dark-card relative overflow-hidden rounded-2xl py-10 flex flex-col items-center gap-2">
-          {/* Background ambient glow */}
-          <div className="pointer-events-none absolute -top-20 left-1/2 h-60 w-96 -translate-x-1/2 rounded-full bg-[#27D9FF]/15 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-10 left-1/2 h-40 w-80 -translate-x-1/2 rounded-full bg-[#FFD700]/10 blur-2xl" />
+        <div className="hana-dark-card relative overflow-hidden rounded-2xl py-6 sm:py-8 flex flex-col items-center">
+          {/* Ambient background glows */}
+          <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[32rem] -translate-x-1/2 rounded-full bg-[#0755E8]/25 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-12 left-1/2 h-44 w-96 -translate-x-1/2 rounded-full bg-[#FFD700]/15 blur-3xl" />
 
-        
-
-          <div className="relative z-10">
-            <ProductCarousel
-              products={ECOSYSTEM_PRODUCTS}
-              onCardClick={(id) => setComingSoonProductId(id)}
+          {/* 3D WebGL Circular Gallery Canvas Stage */}
+          <div className="relative z-10 w-full" style={{ height: '580px' }}>
+            <CircularGallery
+              ref={galleryRef}
+              items={galleryItems}
+              bend={3}
+              textColor="#ffffff"
+              borderRadius={0.05}
+              scrollEase={0.05}
+              onItemClick={(item, index) => {
+                setActiveProductIndex(index);
+              }}
+              onActiveChange={(index) => {
+                setActiveProductIndex(index);
+              }}
+              itemSize={1}
+              itemAspect={0.78}
+              gap={0.26}
+              wave={1}
+              fadeEdges={0.12}
+              shadow={0.25}
+              scrollSpeed={0}
+              autoScroll={0}
+              enableWheel={false}
+              enableDrag={false}
+              snap
+              grayscale={false}
+              showTitles
+              openOnClick
+              intro
             />
+          </div>
+
+          {/* Left and Right Arrow Navigation Controls */}
+          <div className="relative z-20 mt-4 flex items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => galleryRef.current?.prev()}
+              aria-label="Previous product"
+              className="group flex h-11 w-11 items-center justify-center rounded-full border border-[#27D9FF]/40 bg-[#041F63]/80 text-white backdrop-blur-md transition-all duration-200 hover:scale-110 hover:border-[#FFD700] hover:bg-[#0755E8] hover:text-[#FFD700] active:scale-95 cursor-pointer shadow-[0_4px_18px_rgba(7,85,232,0.35)]"
+            >
+              <ChevronLeft className="h-6 w-6 stroke-[2.2] transition-transform group-hover:-translate-x-0.5" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => galleryRef.current?.next()}
+              aria-label="Next product"
+              className="group flex h-11 w-11 items-center justify-center rounded-full border border-[#27D9FF]/40 bg-[#041F63]/80 text-white backdrop-blur-md transition-all duration-200 hover:scale-110 hover:border-[#FFD700] hover:bg-[#0755E8] hover:text-[#FFD700] active:scale-95 cursor-pointer shadow-[0_4px_18px_rgba(7,85,232,0.35)]"
+            >
+              <ChevronRight className="h-6 w-6 stroke-[2.2] transition-transform group-hover:translate-x-0.5" />
+            </button>
           </div>
         </div>
       )}
 
       {/* 3. Polished Five Product Cards Grid */}
       {viewMode === 'grid' && (
-      <div
-        className={`grid gap-5 ${
-          visibleProducts.length === 1
-            ? 'grid-cols-1 max-w-md'
-            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-        }`}
-      >
-        {visibleProducts.map((product) => {
-          const Icon = product.icon;
-          return (
-            <article
-              key={product.id}
-              onClick={() => setComingSoonProductId(product.id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setComingSoonProductId(product.id);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label={`Open ${product.connectedTitle} Coming Soon preview`}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#27D9FF]/45 bg-gradient-to-b from-[#0A4FD4] via-[#042A89] to-[#041442] text-white shadow-[0_14px_34px_rgba(3,43,145,0.28)] transition-all duration-200 hover:-translate-y-1.5 hover:border-[#FFD700]/85 hover:shadow-[0_20px_42px_rgba(7,85,232,0.42)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFD700] cursor-pointer"
-            >
-              {/* Top Specular Gold & Cyan Rim */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[2px] bg-gradient-to-r from-transparent via-[#FFE98A] to-transparent opacity-80 transition-opacity group-hover:opacity-100" />
+        <div
+          className={`grid gap-5 ${visibleProducts.length === 1
+              ? 'grid-cols-1 max-w-md'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+            }`}
+        >
+          {visibleProducts.map((product) => {
+            const Icon = product.icon;
+            return (
+              <article
+                key={product.id}
+                onClick={() => setComingSoonProductId(product.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setComingSoonProductId(product.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open ${product.connectedTitle} Coming Soon preview`}
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#27D9FF]/45 bg-gradient-to-b from-[#0A4FD4] via-[#042A89] to-[#041442] text-white shadow-[0_14px_34px_rgba(3,43,145,0.28)] transition-all duration-200 hover:-translate-y-1.5 hover:border-[#FFD700]/85 hover:shadow-[0_20px_42px_rgba(7,85,232,0.42)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFD700] cursor-pointer"
+              >
+                {/* Top Specular Gold & Cyan Rim */}
+                <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[2px] bg-gradient-to-r from-transparent via-[#FFE98A] to-transparent opacity-80 transition-opacity group-hover:opacity-100" />
 
-              {/* Product 3D Visual Stage */}
-              <div className="relative overflow-hidden bg-[#031F6B]">
-                <ProductVisual
-                  src={product.image}
-                  alt={`${product.brandPrefix} ${product.title}`}
-                  Icon={Icon}
-                  className="aspect-[4/3] w-full transition-transform duration-300 group-hover:scale-[1.05]"
-                />
-                {/* Seamless gradient blend into the royal-blue card body */}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#042A89] via-[#042A89]/25 to-transparent" />
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#031F6B]/55 to-transparent" />
+                {/* Product 3D Visual Stage */}
+                <div className="relative overflow-hidden bg-[#031F6B]">
+                  <ProductVisual
+                    src={product.image}
+                    alt={`${product.brandPrefix} ${product.title}`}
+                    Icon={Icon}
+                    className="aspect-[4/3] w-full transition-transform duration-300 group-hover:scale-[1.05]"
+                  />
+                  {/* Seamless gradient blend into the royal-blue card body */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#042A89] via-[#042A89]/25 to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#031F6B]/55 to-transparent" />
 
-                {/* Title overlay — top left on image */}
-                <div className="absolute left-0 top-0 z-20 px-3 pt-3">
-                  <p className="font-display text-[10px] font-extrabold tracking-widest text-[#FFD700] uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
-                    {product.brandPrefix}
-                  </p>
-                  <h3 className="font-display text-[18px] font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]">
-                    {product.title}
-                  </h3>
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="relative z-10 -mt-3 flex flex-1 flex-col justify-between px-4 pb-5 pt-2 sm:px-5">
-                <div className="space-y-3">
-                  {/* Product Title Lockup — hidden, now shown on image */}
-                  <div className="flex items-start justify-between gap-2" />
-
-                  {/* Description */}
-                  <p className="min-h-[40px] text-xs leading-relaxed text-blue-100/90">
-                    {product.summary}
-                  </p>
-
-                  {/* Hairline divider */}
-                  <div className="h-px bg-gradient-to-r from-[#27D9FF]/35 via-white/15 to-transparent" />
-
-                  {/* 3 Feature Checkmarks */}
-                  <ul className="space-y-2 pt-0.5">
-                    {product.features.map((feat) => (
-                      <li key={feat} className="flex items-center gap-2 text-xs font-semibold text-blue-50">
-                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#FFD700]" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* Title overlay — top left on image */}
+                  <div className="absolute left-0 top-0 z-20 px-3 pt-3">
+                    <p className="font-display text-[10px] font-extrabold tracking-widest text-[#FFD700] uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+                      {product.brandPrefix}
+                    </p>
+                    <h3 className="font-display text-[18px] font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]">
+                      {product.title}
+                    </h3>
+                  </div>
                 </div>
 
-                {/* Primary CTA */}
-                <div className="pt-5">
-                  <GoldButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setComingSoonProductId(product.id);
-                    }}
-                    className="w-full py-2.5 text-xs"
-                  >
-                    Explore Product
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </GoldButton>
+                {/* Card Body */}
+                <div className="relative z-10 -mt-3 flex flex-1 flex-col justify-between px-4 pb-5 pt-2 sm:px-5">
+                  <div className="space-y-3">
+                    {/* Product Title Lockup — hidden, now shown on image */}
+                    <div className="flex items-start justify-between gap-2" />
+
+                    {/* Description */}
+                    <p className="min-h-[40px] text-xs leading-relaxed text-blue-100/90">
+                      {product.summary}
+                    </p>
+
+                    {/* Hairline divider */}
+                    <div className="h-px bg-gradient-to-r from-[#27D9FF]/35 via-white/15 to-transparent" />
+
+                    {/* 3 Feature Checkmarks */}
+                    <ul className="space-y-2 pt-0.5">
+                      {product.features.map((feat) => (
+                        <li key={feat} className="flex items-center gap-2 text-xs font-semibold text-blue-50">
+                          <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#FFD700]" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Primary CTA */}
+                  <div className="pt-5">
+                    <GoldButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setComingSoonProductId(product.id);
+                      }}
+                      className="w-full py-2.5 text-xs"
+                    >
+                      Explore Product
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </GoldButton>
+                  </div>
                 </div>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+              </article>
+            );
+          })}
+        </div>
       )}
 
       {/* 4. Bottom "One Connected Ecosystem" Strip + "The Future Is Connected." Callout */}
@@ -503,7 +561,7 @@ export function EcosystemPage() {
         </section>
       </div> */}
 
-  
+
 
       {/* 6. Minimal Coming Soon Popup Modal */}
       {selectedProduct && (
