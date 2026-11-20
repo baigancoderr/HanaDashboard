@@ -8,13 +8,17 @@ import {
   Gamepad2,
   Globe2,
   Layers,
+  LayoutGrid,
   Rocket,
+  SlidersHorizontal,
   TrendingUp,
   X,
 } from 'lucide-react';
 import { useHana } from '../context/HanaContext';
 import { HANA_IMAGES } from '../assets/images';
 import { GoldButton, BlueButton } from '../components/common/UiPrimitives';
+import { ProductCarousel } from '../components/common/ProductCarousel';
+import { TeamCarousel } from '../components/common/TeamCarousel';
 
 const ECOSYSTEM_PRODUCTS = [
   {
@@ -34,7 +38,7 @@ const ECOSYSTEM_PRODUCTS = [
     features: [
       'Decentralized Predictions',
       'Transparent Outcomes',
-      'Blockchain Verification',
+     
     ],
     accessRequirement: 'HANA Wallet & Active Stakers',
     synergyActionLabel: 'Stake HANA Meantime',
@@ -57,7 +61,7 @@ const ECOSYSTEM_PRODUCTS = [
     features: [
       'Interactive Gaming',
       'Play-to-Earn Rewards',
-      'Digital Assets',
+     
     ],
     accessRequirement: 'HANA Community Members',
     synergyActionLabel: 'Explore HANA Tokenomics',
@@ -80,7 +84,7 @@ const ECOSYSTEM_PRODUCTS = [
     features: [
       'Smart AI Assistant',
       'Multi-Chain Wallet',
-      'DeFi Integration',
+    
     ],
     accessRequirement: 'All Ecosystem Users',
     synergyActionLabel: 'View Token Swap',
@@ -102,7 +106,7 @@ const ECOSYSTEM_PRODUCTS = [
       'Global virtual and physical card issuance with real-time USDT and HANA balance conversion is in banking partner onboarding.',
     features: [
       'Global Payments',
-      'Instant Transactions',
+     
       'Crypto Utility',
     ],
     accessRequirement: 'Verified HANA Accounts',
@@ -125,7 +129,7 @@ const ECOSYSTEM_PRODUCTS = [
       'Dedicated EVM-compatible Layer-1 validator nodes, public explorer tooling, and cross-ecosystem settlement bridges are in active testnet.',
     features: [
       'Secure Infrastructure',
-      'Full Transparency',
+      
       'Decentralized Network',
     ],
     accessRequirement: 'DAO & Validator Participants',
@@ -178,6 +182,7 @@ export function EcosystemPage() {
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [comingSoonProductId, setComingSoonProductId] = useState(null);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'carousel'
 
   useEffect(() => {
     if (!comingSoonProductId) return;
@@ -221,9 +226,7 @@ export function EcosystemPage() {
 
         <div className="relative z-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <div className="max-w-2xl space-y-4">
-            <p className="font-display text-xs font-extrabold tracking-[0.18em] text-[#FFD700] uppercase">
-              The HANA Ecosystem
-            </p>
+        
 
             <h1 className="font-display text-3xl font-extrabold leading-[1.12] tracking-tight text-balance drop-shadow-[0_2px_12px_rgba(3,43,145,0.7)] sm:text-4xl lg:text-[42px]">
               One Ecosystem.{' '}
@@ -236,34 +239,11 @@ export function EcosystemPage() {
               Explore the next generation of blockchain, AI, gaming and digital finance — unified by the HANA token economy.
             </p>
 
-            {/* Quick Category Jump Links */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 pt-1">
-              {ECOSYSTEM_PRODUCTS.map((prod) => {
-                const Icon = prod.icon;
-                return (
-                  <button
-                    key={prod.id}
-                    type="button"
-                    onClick={() => scrollToProducts(prod.filterKey)}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-blue-50 transition hover:text-[#FFD700] whitespace-nowrap shrink-0 cursor-pointer sm:text-sm"
-                  >
-                    <Icon className="h-4 w-4 text-[#FFD700]" />
-                    <span>{prod.shortNav}</span>
-                  </button>
-                );
-              })}
-            </div>
+          
           </div>
 
           <div className="flex shrink-0 flex-col items-start gap-3 lg:items-end">
-            <div className="rounded-xl border border-white/20 bg-[#031F6B]/75 px-4 py-2.5 text-left backdrop-blur-md lg:text-right">
-              <p className="text-[11px] font-bold tracking-wide text-[#FFE98A] uppercase">
-                Your Ecosystem Power
-              </p>
-              <p className="mt-0.5 font-mono text-sm font-extrabold text-white tabular-nums">
-                {hanaBalance.toLocaleString('en-US', { maximumFractionDigits: 2 })} HANA · ${totalStaked.toLocaleString('en-US')} Staked
-              </p>
-            </div>
+           
             <GoldButton onClick={() => scrollToProducts('all')} className="px-6 py-3">
               Explore Our Products
               <ArrowRight className="h-4 w-4" />
@@ -272,49 +252,71 @@ export function EcosystemPage() {
         </div>
       </section>
 
-      {/* 2. Section Header & Filter Bar */}
+      {/* 2. Section Header & View Toggle */}
       <div
         id="ecosystem-products"
-        className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"
+        className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center rounded-xl border border-[#0755E8]/20 bg-white/90 px-4 py-3 shadow-xs"
       >
         <div>
           <h2 className="font-display text-xl font-extrabold tracking-tight text-[#032B91] sm:text-2xl">
             Five Core Ecosystem Products
           </h2>
-          <p className="text-xs font-medium text-[#0645C5]/80 sm:text-sm">
+          <p className="text-xs font-medium text-[#0645C5]/75 sm:text-sm">
             Click any product card to preview upcoming launch details and enable early-access alerts.
           </p>
         </div>
 
-        {/* Interactive Filter Segmented Bar */}
-        <div
-          className="flex flex-wrap items-center gap-1 rounded-xl border border-[#0755E8]/20 bg-white/90 p-1 shadow-xs"
-          role="tablist"
-          aria-label="Filter ecosystem products"
-        >
-          {FILTER_TABS.map((tab) => {
-            const active = activeFilter === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setActiveFilter(tab.key)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
-                  active
-                    ? 'bg-gradient-to-r from-[#0755E8] to-[#032B91] text-white shadow-sm'
-                    : 'text-[#032B91]/80 hover:bg-[#EAF4FF] hover:text-[#032B91]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+        {/* Grid / Carousel toggle */}
+        <div className="flex items-center gap-1 rounded-xl border border-[#0755E8]/20 bg-[#EAF4FF] p-1 shadow-xs shrink-0">
+          <button
+            type="button"
+            onClick={() => setViewMode('grid')}
+            aria-pressed={viewMode === 'grid'}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+              viewMode === 'grid'
+                ? 'bg-gradient-to-r from-[#0755E8] to-[#032B91] text-white shadow-sm'
+                : 'text-[#032B91]/80 hover:bg-white/70 hover:text-[#032B91]'
+            }`}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            Grid
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('carousel')}
+            aria-pressed={viewMode === 'carousel'}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+              viewMode === 'carousel'
+                ? 'bg-gradient-to-r from-[#0755E8] to-[#032B91] text-white shadow-sm'
+                : 'text-[#032B91]/80 hover:bg-white/70 hover:text-[#032B91]'
+            }`}
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            Carousel
+          </button>
         </div>
       </div>
 
+      {/* Carousel View */}
+      {viewMode === 'carousel' && (
+        <div className="hana-dark-card relative overflow-hidden rounded-2xl py-10 flex flex-col items-center gap-2">
+          {/* Background ambient glow */}
+          <div className="pointer-events-none absolute -top-20 left-1/2 h-60 w-96 -translate-x-1/2 rounded-full bg-[#27D9FF]/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 left-1/2 h-40 w-80 -translate-x-1/2 rounded-full bg-[#FFD700]/10 blur-2xl" />
+
+        
+
+          <div className="relative z-10">
+            <ProductCarousel
+              products={ECOSYSTEM_PRODUCTS}
+              onCardClick={(id) => setComingSoonProductId(id)}
+            />
+          </div>
+        </div>
+      )}
+
       {/* 3. Polished Five Product Cards Grid */}
+      {viewMode === 'grid' && (
       <div
         className={`grid gap-5 ${
           visibleProducts.length === 1
@@ -353,32 +355,23 @@ export function EcosystemPage() {
                 {/* Seamless gradient blend into the royal-blue card body */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#042A89] via-[#042A89]/25 to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-[#031F6B]/55 to-transparent" />
+
+                {/* Title overlay — top left on image */}
+                <div className="absolute left-0 top-0 z-20 px-3 pt-3">
+                  <p className="font-display text-[10px] font-extrabold tracking-widest text-[#FFD700] uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+                    {product.brandPrefix}
+                  </p>
+                  <h3 className="font-display text-[18px] font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]">
+                    {product.title}
+                  </h3>
+                </div>
               </div>
 
               {/* Card Body */}
               <div className="relative z-10 -mt-3 flex flex-1 flex-col justify-between px-4 pb-5 pt-2 sm:px-5">
                 <div className="space-y-3">
-                  {/* Category Kicker */}
-                  <div>
-                    <span className="text-[11px] font-bold tracking-wider text-[#7BE6FF] uppercase">
-                      {product.category}
-                    </span>
-                  </div>
-
-                  {/* Product Title Lockup */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-display text-xs font-extrabold tracking-widest text-[#FFD700] uppercase">
-                        {product.brandPrefix}
-                      </p>
-                      <h3 className="font-display text-[22px] font-extrabold leading-tight tracking-tight text-white">
-                        {product.title}
-                      </h3>
-                    </div>
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-[#FFD700] backdrop-blur-xs transition-colors group-hover:border-[#FFD700]/60 group-hover:bg-[#FFD700]/15">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                  </div>
+                  {/* Product Title Lockup — hidden, now shown on image */}
+                  <div className="flex items-start justify-between gap-2" />
 
                   {/* Description */}
                   <p className="min-h-[40px] text-xs leading-relaxed text-blue-100/90">
@@ -417,9 +410,10 @@ export function EcosystemPage() {
           );
         })}
       </div>
+      )}
 
       {/* 4. Bottom "One Connected Ecosystem" Strip + "The Future Is Connected." Callout */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-stretch">
+      {/* <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-stretch">
         <section className="hana-dark-card relative overflow-hidden rounded-2xl p-5 text-white lg:col-span-8 sm:p-6">
           <div className="pointer-events-none absolute -bottom-16 left-1/2 h-40 w-3/4 -translate-x-1/2 rounded-full bg-[#27D9FF]/15 blur-3xl" />
 
@@ -507,9 +501,11 @@ export function EcosystemPage() {
             </BlueButton>
           </div>
         </section>
-      </div>
+      </div> */}
 
-      {/* 5. Minimal Coming Soon Popup Modal */}
+  
+
+      {/* 6. Minimal Coming Soon Popup Modal */}
       {selectedProduct && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-[#03123A]/75 p-4 backdrop-blur-md"
